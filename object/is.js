@@ -1,11 +1,10 @@
+// Implementation credits go to:
+// http://wiki.ecmascript.org/doku.php?id=harmony:egal
+
 "use strict";
 
-var isValue = require("../value/is");
+var numIsNaN = require("../number/is-nan");
 
-// prettier-ignore
-var possibleTypes = { "object": true, "function": true, "undefined": true /* document.all */ };
-
-module.exports = function (value) {
-	if (!isValue(value)) return false;
-	return hasOwnProperty.call(possibleTypes, typeof value);
+module.exports = function (val1, val2) {
+	return val1 === val2 ? val1 !== 0 || 1 / val1 === 1 / val2 : numIsNaN(val1) && numIsNaN(val2);
 };
