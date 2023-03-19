@@ -2,88 +2,89 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [1.7.0](https://github.com/medikoo/es5-ext/compare/v1.6.0...v1.7.0) (2022-08-31)
-
-### Features
-
-- `string.camelToHyphen` method ([b8ea4ab](https://github.com/medikoo/es5-ext/commit/b8ea4ab6c8b920ecdff224f9c92092e1c7f8cdfc))
-- `string.capitalize` method ([32e7360](https://github.com/medikoo/es5-ext/commit/32e736034bd27ed25d4566b22aa93aa66c7901cf))
-
-## [1.6.0](https://github.com/medikoo/es5-ext/compare/v1.5.0...v1.6.0) (2021-09-24)
-
-### Features
-
-- `Object.clear` util ([a955da4](https://github.com/medikoo/es5-ext/commit/a955da41e65a25ad87a46234bae065f096abd1d2))
+## [1.2.0](https://github.com/medikoo/type/compare/v1.1.0...v1.2.0) (2019-09-20)
 
 ### Bug Fixes
 
-- Fix `Object.entries` to not return non enumerable properties ([44fb872](https://github.com/medikoo/es5-ext/commit/44fb87266617378d2f47a1a5baad6280bf6298a8))
-
-## [1.5.0](https://github.com/medikoo/es5-ext/compare/v1.3.0...v1.5.0) (2021-08-23)
+- Improve error message so it's not confusing ([97cd6b9](https://github.com/medikoo/type/commit/97cd6b9))
 
 ### Features
 
-- `Promise.limit` ([060a05d](https://github.com/medikoo/es5-ext/commit/060a05d4751cd291c6dd7641f5a73ba9338ea7ab))
-- `String.prototype.includes` ([ceebe8d](https://github.com/medikoo/es5-ext/commit/ceebe8dfd6f479d6a7e7b6cd79369291869ee2dd))
-- `charset` option for `String.random` ([2a20eeb](https://github.com/medikoo/es5-ext/commit/2a20eebc5ae784e5c1aacd2c54433fe92a9464c9))
+- 'coerceItem' option for iterable/ensure ([0818860](https://github.com/medikoo/type/commit/0818860))
 
-## [1.4.0](https://github.com///compare/v1.3.0...v1.4.0) (2019-11-29)
+## [1.1.0](https://github.com/medikoo/type/compare/v1.0.3...v1.1.0) (2019-09-20)
 
 ### Features
 
-- `charset` option for `String.random` ([2a20eeb](https://github.com///commit/2a20eebc5ae784e5c1aacd2c54433fe92a9464c9))
-- `String.prototype.includes` implementation ([ceebe8d](https://github.com///commit/ceebe8dfd6f479d6a7e7b6cd79369291869ee2dd))
+- `denyEmpty` option for iterables validation ([301d071](https://github.com/medikoo/type/commit/301d071))
 
-## [1.3.0](https://github.com///compare/v1.2.1...v1.3.0) (2019-11-28)
-
-### Features
-
-- `String.random` util ([5b5860a](https://github.com///commit/5b5860ac545b05f00527e00295fdb4f97e4a4e5b))
-
-### [1.2.1](https://github.com///compare/v1.2.0...v1.2.1) (2019-11-26)
-
-## [1.2.0](https://github.com/medikoo/ext/compare/v1.1.2...v1.2.0) (2019-11-07)
-
-### Features
-
-- ceil10, floor10 and round10 for Math ([6a2bc4b](https://github.com/medikoo/ext/commit/6a2bc4b))
-
-### [1.1.2](https://github.com/medikoo/ext/compare/v1.1.1...v1.1.2) (2019-10-29)
+### [1.0.3](https://github.com/medikoo/type/compare/v1.0.2...v1.0.3) (2019-08-06)
 
 ### Bug Fixes
 
-- Improve globalThis detection ([470862d](https://github.com/medikoo/ext/commit/470862d))
+- Recognize custom built ES5 era errors ([6462fac](https://github.com/medikoo/type/commit/6462fac))
 
-### [1.1.1](https://github.com/medikoo/ext/compare/v1.1.0...v1.1.1) (2019-10-29)
+### [1.0.2](https://github.com/medikoo/type/compare/v1.0.1...v1.0.2) (2019-08-06)
 
 ### Bug Fixes
 
-- Provide naive fallback for sealed Object.prototype case ([a8d528b](https://github.com/medikoo/ext/commit/a8d528b))
-- Workaournd Safari incompatibility case ([0b051e6](https://github.com/medikoo/ext/commit/0b051e6))
+- Recognize host errors (e.g. DOMException) ([96ef399](https://github.com/medikoo/type/commit/96ef399))
 
-## [1.1.0](https://github.com/medikoo/ext/compare/v1.0.3...v1.1.0) (2019-10-21)
+## [1.0.1](https://github.com/medikoo/type/compare/v1.0.0...v1.0.1) (2019-04-08)
 
-### Features
+# 1.0.0 (2019-04-05)
 
-- Object.entries implementation ([cf51e45](https://github.com/medikoo/ext/commit/cf51e45))
+### Bug Fixes
 
-### [1.0.3](https://github.com/medikoo/ext/compare/v1.0.1...v1.0.3) (2019-07-03)
-
-Remove obsolete files from publication
-
-### [1.0.2](https://github.com/medikoo/ext/compare/v1.0.1...v1.0.2) (2019-07-03)
-
-(no changes)
-
-### [1.0.1](https://github.com/medikoo/ext/compare/v1.0.0...v1.0.1) (2019-07-03)
-
-Prettify
-
-## 1.0.0 (2019-07-03)
+- ensure 'is' functions can't crash ([59ceb78](https://github.com/medikoo/type/commit/59ceb78))
 
 ### Features
 
-- `function/identity` (adapted from `es5-ext`) ([f0102af](https://github.com/medikoo/ext/commit/f0102af))
-- `thenable/finally` (adapted from `es5-ext`) ([a8494ac](https://github.com/medikoo/ext/commit/a8494ac))
-- `global-this/is-implemented` ([3a80904](https://github.com/medikoo/ext/commit/3a80904))
-- `globalThis` (mostly adapted from `es5-ext`) ([6559bd3](https://github.com/medikoo/ext/commit/6559bd3))
+- array-length/coerce ([af8ddec](https://github.com/medikoo/type/commit/af8ddec))
+- array-length/ensure ([d313eb6](https://github.com/medikoo/type/commit/d313eb6))
+- array-like/ensure ([45f1ddd](https://github.com/medikoo/type/commit/45f1ddd))
+- array-like/is ([9a026a5](https://github.com/medikoo/type/commit/9a026a5))
+- array/ensure ([9db1515](https://github.com/medikoo/type/commit/9db1515))
+- array/is ([9672839](https://github.com/medikoo/type/commit/9672839))
+- date/ensure ([44e25a0](https://github.com/medikoo/type/commit/44e25a0))
+- date/is ([0316558](https://github.com/medikoo/type/commit/0316558))
+- ensure to not crash ([3998348](https://github.com/medikoo/type/commit/3998348))
+- ensure/number ([134b5cb](https://github.com/medikoo/type/commit/134b5cb))
+- error/ensure ([d5c8a30](https://github.com/medikoo/type/commit/d5c8a30))
+- error/is-error ([4d6b899](https://github.com/medikoo/type/commit/4d6b899))
+- finite/coerce ([accaad1](https://github.com/medikoo/type/commit/accaad1))
+- finite/ensure ([51e4174](https://github.com/medikoo/type/commit/51e4174))
+- function/ensure ([b624c9a](https://github.com/medikoo/type/commit/b624c9a))
+- function/is ([dab8026](https://github.com/medikoo/type/commit/dab8026))
+- integer/coerce ([89dea2e](https://github.com/medikoo/type/commit/89dea2e))
+- integer/ensure ([44a7071](https://github.com/medikoo/type/commit/44a7071))
+- iterable/ensure ([3d48841](https://github.com/medikoo/type/commit/3d48841))
+- iterable/is ([cf09513](https://github.com/medikoo/type/commit/cf09513))
+- lib/is-to-string-tag-supported ([c8c001d](https://github.com/medikoo/type/commit/c8c001d))
+- natural-number/coerce ([d08fdd9](https://github.com/medikoo/type/commit/d08fdd9))
+- natural-number/ensure ([6c24d12](https://github.com/medikoo/type/commit/6c24d12))
+- number/coerce ([86ccf08](https://github.com/medikoo/type/commit/86ccf08))
+- object/ensure ([a9e8eed](https://github.com/medikoo/type/commit/a9e8eed))
+- object/is ([d2d7251](https://github.com/medikoo/type/commit/d2d7251))
+- plain-function/ensure ([5186518](https://github.com/medikoo/type/commit/5186518))
+- plain-function/is ([51bc791](https://github.com/medikoo/type/commit/51bc791))
+- plain-object/ensure ([91cf5e5](https://github.com/medikoo/type/commit/91cf5e5))
+- plain-object/is ([4dcf393](https://github.com/medikoo/type/commit/4dcf393))
+- promise/ensure ([8d096a4](https://github.com/medikoo/type/commit/8d096a4))
+- promise/is ([a00de02](https://github.com/medikoo/type/commit/a00de02))
+- prototype/is ([b23bdcc](https://github.com/medikoo/type/commit/b23bdcc))
+- reg-exp/ensure ([6f7bbcb](https://github.com/medikoo/type/commit/6f7bbcb))
+- reg-exp/is ([9728519](https://github.com/medikoo/type/commit/9728519))
+- safe-integer/coerce ([b8549c4](https://github.com/medikoo/type/commit/b8549c4))
+- safe-integer/ensure ([a70ef3f](https://github.com/medikoo/type/commit/a70ef3f))
+- string/coerce ([b25c71f](https://github.com/medikoo/type/commit/b25c71f))
+- string/ensure ([b62577d](https://github.com/medikoo/type/commit/b62577d))
+- support 'default' in resolveException ([e08332a](https://github.com/medikoo/type/commit/e08332a))
+- switch config to ES3 based ([37606d9](https://github.com/medikoo/type/commit/37606d9))
+- thenable/ensure ([6762c0d](https://github.com/medikoo/type/commit/6762c0d))
+- thenable/is ([2711d70](https://github.com/medikoo/type/commit/2711d70))
+- time-value/coerce ([27fd109](https://github.com/medikoo/type/commit/27fd109))
+- time-value/ensure ([1f6a8ea](https://github.com/medikoo/type/commit/1f6a8ea))
+- **string/coerce:** restrict toString acceptance ([2a87100](https://github.com/medikoo/type/commit/2a87100))
+- value/ensure ([dd6d8cb](https://github.com/medikoo/type/commit/dd6d8cb))
+- value/is ([fdf4763](https://github.com/medikoo/type/commit/fdf4763))
