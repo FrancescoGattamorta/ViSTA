@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=<label for="frame-color">Frame Color:</label>
+</head>
+<body>
+    <select id="frame-color">
+      <option value="black">Black</option>
+      <option value="brown">Brown</option>
+      <option value="silver">Silver</option>
+    </select>
+    
+    <label for="lens-color">Lens Color:</label>
+    <select id="lens-color">
+      <option value="black">Black</option>
+      <option value="brown">Brown</option>
+      <option value="gray">Gray</option>
+    </select>
+    
+    <button onclick="updateSunglasses()">Update Sunglasses</button>
+    
+    <div id="sunglasses">
+      <!-- Sunglasses image here -->
+    </div>, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #frame-color, #lens-color {
+  margin-right: 10px;
+}
+
+#sunglasses {
+  margin-top: 20px;
+}
+
+    </style>
+    <script>
+        function updateSunglasses() {
+  const frameColor = document.getElementById("frame-color").value;
+  const lensColor = document.getElementById("lens-color").value;
+  
+  const sunglassesImage = document.createElement("img");
+  sunglassesImage.src = `sunglasses-${frameColor}-${lensColor}.jpg`;
+  
+  const sunglassesDiv = document.getElementById("sunglasses");
+  sunglassesDiv.innerHTML = "";
+  sunglassesDiv.appendChild(sunglassesImage);
+}
+
+    </script>
+
+
+    
+</body>
+</html>
