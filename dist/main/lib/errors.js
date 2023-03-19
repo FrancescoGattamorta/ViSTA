@@ -1,22 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StorageUnknownError = exports.StorageApiError = exports.isStorageError = exports.StorageError = void 0;
-class StorageError extends Error {
-    constructor(message) {
-        super(message);
-        this.__isStorageError = true;
-        this.name = 'StorageError';
-    }
-}
-exports.StorageError = StorageError;
-function isStorageError(error) {
-    return typeof error === 'object' && error !== null && '__isStorageError' in error;
-}
-exports.isStorageError = isStorageError;
-class StorageApiError extends StorageError {
+exports.AuthRetryableFetchError = exports.AuthImplicitGrantRedirectError = exports.AuthInvalidCredentialsError = exports.AuthSessionMissingError = exports.CustomAuthError = exports.AuthUnknownError = exports.isAuthApiError = exports.AuthApiError = exports.isAuthError = exports.AuthError = void 0;
+class AuthError extends Error {
     constructor(message, status) {
         super(message);
-        this.name = 'StorageApiError';
+        this.__isAuthError = true;
+        this.name = 'AuthError';
+        this.status = status;
+    }
+}
+exports.AuthError = AuthError;
+function isAuthError(error) {
+    return typeof error === 'object' && error !== null && '__isAuthError' in error;
+}
+exports.isAuthError = isAuthError;
+class AuthApiError extends AuthError {
+    constructor(message, status) {
+        super(message, status);
+        this.name = 'AuthApiError';
         this.status = status;
     }
     toJSON() {
@@ -27,13 +28,66 @@ class StorageApiError extends StorageError {
         };
     }
 }
-exports.StorageApiError = StorageApiError;
-class StorageUnknownError extends StorageError {
+exports.AuthApiError = AuthApiError;
+function isAuthApiError(error) {
+    return isAuthError(error) && error.name === 'AuthApiError';
+}
+exports.isAuthApiError = isAuthApiError;
+class AuthUnknownError extends AuthError {
     constructor(message, originalError) {
         super(message);
-        this.name = 'StorageUnknownError';
+        this.name = 'AuthUnknownError';
         this.originalError = originalError;
     }
 }
-exports.StorageUnknownError = StorageUnknownError;
+exports.AuthUnknownError = AuthUnknownError;
+class CustomAuthError extends AuthError {
+    constructor(message, name, status) {
+        super(message);
+        this.name = name;
+        this.status = status;
+    }
+    toJSON() {
+        return {
+            name: this.name,
+            message: this.message,
+            status: this.status,
+        };
+    }
+}
+exports.CustomAuthError = CustomAuthError;
+class AuthSessionMissingError extends CustomAuthError {
+    constructor() {
+        super('Auth session missing!', 'AuthSessionMissingError', 400);
+    }
+}
+exports.AuthSessionMissingError = AuthSessionMissingError;
+class AuthInvalidCredentialsError extends CustomAuthError {
+    constructor(message) {
+        super(message, 'AuthInvalidCredentialsError', 400);
+    }
+}
+exports.AuthInvalidCredentialsError = AuthInvalidCredentialsError;
+class AuthImplicitGrantRedirectError extends CustomAuthError {
+    constructor(message, details = null) {
+        super(message, 'AuthImplicitGrantRedirectError', 500);
+        this.details = null;
+        this.details = details;
+    }
+    toJSON() {
+        return {
+            name: this.name,
+            message: this.message,
+            status: this.status,
+            details: this.details,
+        };
+    }
+}
+exports.AuthImplicitGrantRedirectError = AuthImplicitGrantRedirectError;
+class AuthRetryableFetchError extends CustomAuthError {
+    constructor(message, status) {
+        super(message, 'AuthRetryableFetchError', status);
+    }
+}
+exports.AuthRetryableFetchError = AuthRetryableFetchError;
 //# sourceMappingURL=errors.js.map

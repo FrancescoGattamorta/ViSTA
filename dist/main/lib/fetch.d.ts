@@ -1,4 +1,4 @@
-import { FetchParameters } from './types';
+import { AuthResponse, SSOResponse, GenerateLinkResponse, UserResponse } from './types';
 export declare type Fetch = typeof fetch;
 export interface FetchOptions {
     headers?: {
@@ -6,9 +6,27 @@ export interface FetchOptions {
     };
     noResolveJson?: boolean;
 }
+export interface FetchParameters {
+    signal?: AbortSignal;
+}
 export declare type RequestMethodType = 'GET' | 'POST' | 'PUT' | 'DELETE';
-export declare function get(fetcher: Fetch, url: string, options?: FetchOptions, parameters?: FetchParameters): Promise<any>;
-export declare function post(fetcher: Fetch, url: string, body: object, options?: FetchOptions, parameters?: FetchParameters): Promise<any>;
-export declare function put(fetcher: Fetch, url: string, body: object, options?: FetchOptions, parameters?: FetchParameters): Promise<any>;
-export declare function remove(fetcher: Fetch, url: string, body: object, options?: FetchOptions, parameters?: FetchParameters): Promise<any>;
+interface GotrueRequestOptions extends FetchOptions {
+    jwt?: string;
+    redirectTo?: string;
+    body?: object;
+    query?: {
+        [key: string]: string;
+    };
+    /**
+     * Function that transforms api response from gotrue into a desirable / standardised format
+     */
+    xform?: (data: any) => any;
+}
+export declare function _request(fetcher: Fetch, method: RequestMethodType, url: string, options?: GotrueRequestOptions): Promise<any>;
+export declare function _sessionResponse(data: any): AuthResponse;
+export declare function _userResponse(data: any): UserResponse;
+export declare function _ssoResponse(data: any): SSOResponse;
+export declare function _generateLinkResponse(data: any): GenerateLinkResponse;
+export declare function _noResolveJsonResponse(data: any): Response;
+export {};
 //# sourceMappingURL=fetch.d.ts.map

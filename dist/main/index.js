@@ -13,10 +13,15 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StorageClient = void 0;
-var StorageClient_1 = require("./StorageClient");
-Object.defineProperty(exports, "StorageClient", { enumerable: true, get: function () { return StorageClient_1.StorageClient; } });
+exports.GoTrueClient = exports.GoTrueAdminApi = void 0;
+const GoTrueAdminApi_1 = __importDefault(require("./GoTrueAdminApi"));
+exports.GoTrueAdminApi = GoTrueAdminApi_1.default;
+const GoTrueClient_1 = __importDefault(require("./GoTrueClient"));
+exports.GoTrueClient = GoTrueClient_1.default;
 __exportStar(require("./lib/types"), exports);
 __exportStar(require("./lib/errors"), exports);
 //# sourceMappingURL=index.js.map

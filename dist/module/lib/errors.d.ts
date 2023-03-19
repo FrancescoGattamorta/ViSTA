@@ -1,9 +1,10 @@
-export declare class StorageError extends Error {
-    protected __isStorageError: boolean;
-    constructor(message: string);
+export declare class AuthError extends Error {
+    status: number | undefined;
+    protected __isAuthError: boolean;
+    constructor(message: string, status?: number);
 }
-export declare function isStorageError(error: unknown): error is StorageError;
-export declare class StorageApiError extends StorageError {
+export declare function isAuthError(error: unknown): error is AuthError;
+export declare class AuthApiError extends AuthError {
     status: number;
     constructor(message: string, status: number);
     toJSON(): {
@@ -12,8 +13,47 @@ export declare class StorageApiError extends StorageError {
         status: number;
     };
 }
-export declare class StorageUnknownError extends StorageError {
+export declare function isAuthApiError(error: unknown): error is AuthApiError;
+export declare class AuthUnknownError extends AuthError {
     originalError: unknown;
     constructor(message: string, originalError: unknown);
+}
+export declare class CustomAuthError extends AuthError {
+    name: string;
+    status: number;
+    constructor(message: string, name: string, status: number);
+    toJSON(): {
+        name: string;
+        message: string;
+        status: number;
+    };
+}
+export declare class AuthSessionMissingError extends CustomAuthError {
+    constructor();
+}
+export declare class AuthInvalidCredentialsError extends CustomAuthError {
+    constructor(message: string);
+}
+export declare class AuthImplicitGrantRedirectError extends CustomAuthError {
+    details: {
+        error: string;
+        code: string;
+    } | null;
+    constructor(message: string, details?: {
+        error: string;
+        code: string;
+    } | null);
+    toJSON(): {
+        name: string;
+        message: string;
+        status: number;
+        details: {
+            error: string;
+            code: string;
+        } | null;
+    };
+}
+export declare class AuthRetryableFetchError extends CustomAuthError {
+    constructor(message: string, status: number);
 }
 //# sourceMappingURL=errors.d.ts.map
