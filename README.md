@@ -1,761 +1,1039 @@
-[![*nix build status][nix-build-image]][nix-build-url]
-[![Windows build status][win-build-image]][win-build-url]
+[![Build status][build-image]][build-url]
 [![Tests coverage][cov-image]][cov-url]
 [![npm version][npm-image]][npm-url]
 
-# type
+# es5-ext
 
-## Runtime validation and processing of JavaScript types
+## ECMAScript 5 extensions
 
-- Respects language nature and acknowledges its quirks
-- Allows coercion in restricted forms (rejects clearly invalid input, normalizes permissible type deviations)
-- No transpilation implied, written to work in all ECMAScript 3+ engines
+### (with respect to ECMAScript 6 standard)
 
-### Example usage
+Shims for upcoming ES6 standard and other goodies implemented strictly with ECMAScript conventions in mind.
 
-Bulletproof input arguments normalization and validation:
+It's designed to be used in compliant ECMAScript 5 or ECMAScript 6 environments. Older environments are not supported, although most of the features should work with correct ECMAScript 5 shim on board.
 
-```javascript
-const ensureString        = require('type/string/ensure')
-    , ensureDate          = require('type/date/ensure')
-    , ensureNaturalNumber = require('type/natural-number/ensure')
-    , isObject            = require('type/object/is');
-
-module.exports = (path, options = { min: 0 }) {
-  path = ensureString(path, { errorMessage: "%v is not a path" });
-  if (!isObject(options)) options = {};
-  const min = ensureNaturalNumber(options.min, { default: 0 })
-      , max = ensureNaturalNumber(options.max, { isOptional: true })
-      , startTime = ensureDate(options.startTime, { isOptional: true });
-
-  // ...logic
-};
-```
+When used in ECMAScript 6 environment, native implementation (if valid) takes precedence over shims.
 
 ### Installation
 
 ```bash
-npm install type
+npm install es5-ext
 ```
 
-## Utilities
+To port it to Browser or any other (non CJS) environment, use your favorite CJS bundler. No favorite yet? Try: [Browserify](http://browserify.org/), [Webmake](https://github.com/medikoo/modules-webmake) or [Webpack](http://webpack.github.io/)
 
-Serves following kind of utilities:
+### Usage
 
-##### `*/coerce`
+#### ECMAScript 6 features
 
-Restricted coercion into primitive type. Returns coerced value or `null` if value is not coercible per rules.
-
-##### `*/is`
-
-Object type/kind confirmation, returns either `true` or `false`.
-
-##### `*/ensure`
-
-Value validation. Returns input value (in primitive cases possibly coerced) or if value doesn't meet the constraints throws `TypeError` .
-
-Each `*/ensure` utility, accepts following options (eventually passed with second argument):
-
-- `isOptional` - Makes `null` or `undefined` accepted as valid value. In such case instead of `TypeError` being thrown, `null` is returned.
-- `default` - A value to be returned if `null` or `undefined` is passed as an input value.
-- `errorMessage` - Custom error message (`%v` can be used as a placeholder for input value)
-
----
-
-### Value
-
-_Value_, any value that's neither `null` nor `undefined` .
-
-#### `value/is`
-
-Confirms whether passed argument is a _value_
+You can force ES6 features to be implemented in your environment, e.g. following will assign `from` function to `Array` (only if it's not implemented already).
 
 ```javascript
-const isValue = require("type/value/is");
-
-isValue({}); // true
-isValue(null); // false
+require("es5-ext/array/from/implement");
+Array.from("foo"); // ['f', 'o', 'o']
 ```
 
-#### `value/ensure`
-
-Ensures if given argument is a _value_. If it's a value it is returned back, if not `TypeError` is thrown
+You can also access shims directly, without fixing native objects. Following will return native `Array.from` if it's available and fallback to shim if it's not.
 
 ```javascript
-const ensureValue = require("type/value/ensure");
-
-const obj = {};
-
-ensureValue(obj); // obj
-ensureValue(null); // Thrown TypeError: Cannot use null
+var aFrom = require("es5-ext/array/from");
+aFrom("foo"); // ['f', 'o', 'o']
 ```
 
----
-
-### Object
-
-_Object_, any non-primitive value
-
-#### `object/is`
-
-Confirms if passed value is an object
+If you want to use shim unconditionally (even if native implementation exists) do:
 
 ```javascript
-const isObject = require("type/object/is");
-
-isObject({}); // true
-isObject(true); // false
-isObject(null); // false
+var aFrom = require("es5-ext/array/from/shim");
+aFrom("foo"); // ['f', 'o', 'o']
 ```
 
-#### `object/ensure`
+##### List of ES6 shims
 
-If given argument is an object, it is returned back. Otherwise `TypeError` is thrown.
+It's about properties introduced with ES6 and those that have been updated in new spec.
+
+- `Array.from` -> `require('es5-ext/array/from')`
+- `Array.of` -> `require('es5-ext/array/of')`
+- `Array.prototype.concat` -> `require('es5-ext/array/#/concat')`
+- `Array.prototype.copyWithin` -> `require('es5-ext/array/#/copy-within')`
+- `Array.prototype.entries` -> `require('es5-ext/array/#/entries')`
+- `Array.prototype.fill` -> `require('es5-ext/array/#/fill')`
+- `Array.prototype.filter` -> `require('es5-ext/array/#/filter')`
+- `Array.prototype.find` -> `require('es5-ext/array/#/find')`
+- `Array.prototype.findIndex` -> `require('es5-ext/array/#/find-index')`
+- `Array.prototype.keys` -> `require('es5-ext/array/#/keys')`
+- `Array.prototype.map` -> `require('es5-ext/array/#/map')`
+- `Array.prototype.slice` -> `require('es5-ext/array/#/slice')`
+- `Array.prototype.splice` -> `require('es5-ext/array/#/splice')`
+- `Array.prototype.values` -> `require('es5-ext/array/#/values')`
+- `Array.prototype[@@iterator]` -> `require('es5-ext/array/#/@@iterator')`
+- `Math.acosh` -> `require('es5-ext/math/acosh')`
+- `Math.asinh` -> `require('es5-ext/math/asinh')`
+- `Math.atanh` -> `require('es5-ext/math/atanh')`
+- `Math.cbrt` -> `require('es5-ext/math/cbrt')`
+- `Math.clz32` -> `require('es5-ext/math/clz32')`
+- `Math.cosh` -> `require('es5-ext/math/cosh')`
+- `Math.exmp1` -> `require('es5-ext/math/expm1')`
+- `Math.fround` -> `require('es5-ext/math/fround')`
+- `Math.hypot` -> `require('es5-ext/math/hypot')`
+- `Math.imul` -> `require('es5-ext/math/imul')`
+- `Math.log1p` -> `require('es5-ext/math/log1p')`
+- `Math.log2` -> `require('es5-ext/math/log2')`
+- `Math.log10` -> `require('es5-ext/math/log10')`
+- `Math.sign` -> `require('es5-ext/math/sign')`
+- `Math.signh` -> `require('es5-ext/math/signh')`
+- `Math.tanh` -> `require('es5-ext/math/tanh')`
+- `Math.trunc` -> `require('es5-ext/math/trunc')`
+- `Number.EPSILON` -> `require('es5-ext/number/epsilon')`
+- `Number.MAX_SAFE_INTEGER` -> `require('es5-ext/number/max-safe-integer')`
+- `Number.MIN_SAFE_INTEGER` -> `require('es5-ext/number/min-safe-integer')`
+- `Number.isFinite` -> `require('es5-ext/number/is-finite')`
+- `Number.isInteger` -> `require('es5-ext/number/is-integer')`
+- `Number.isNaN` -> `require('es5-ext/number/is-nan')`
+- `Number.isSafeInteger` -> `require('es5-ext/number/is-safe-integer')`
+- `Object.assign` -> `require('es5-ext/object/assign')`
+- `Object.keys` -> `require('es5-ext/object/keys')`
+- `Object.setPrototypeOf` -> `require('es5-ext/object/set-prototype-of')`
+- `Promise.prototype.finally` -> `require('es5-ext/promise/#/finally')`
+- `RegExp.prototype.match` -> `require('es5-ext/reg-exp/#/match')`
+- `RegExp.prototype.replace` -> `require('es5-ext/reg-exp/#/replace')`
+- `RegExp.prototype.search` -> `require('es5-ext/reg-exp/#/search')`
+- `RegExp.prototype.split` -> `require('es5-ext/reg-exp/#/split')`
+- `RegExp.prototype.sticky` -> Implement with `require('es5-ext/reg-exp/#/sticky/implement')`, use as function with `require('es5-ext/reg-exp/#/is-sticky')`
+- `RegExp.prototype.unicode` -> Implement with `require('es5-ext/reg-exp/#/unicode/implement')`, use as function with `require('es5-ext/reg-exp/#/is-unicode')`
+- `String.fromCodePoint` -> `require('es5-ext/string/from-code-point')`
+- `String.raw` -> `require('es5-ext/string/raw')`
+- `String.prototype.codePointAt` -> `require('es5-ext/string/#/code-point-at')`
+- `String.prototype.contains` -> `require('es5-ext/string/#/contains')`
+- `String.prototype.endsWith` -> `require('es5-ext/string/#/ends-with')`
+- `String.prototype.normalize` -> `require('es5-ext/string/#/normalize')`
+- `String.prototype.repeat` -> `require('es5-ext/string/#/repeat')`
+- `String.prototype.startsWith` -> `require('es5-ext/string/#/starts-with')`
+- `String.prototype[@@iterator]` -> `require('es5-ext/string/#/@@iterator')`
+
+#### Non ECMAScript standard features
+
+**es5-ext** provides also other utils, and implements them as if they were proposed for a standard. It mostly offers methods (not functions) which can directly be assigned to native prototypes:
 
 ```javascript
-const ensureObject = require("type/object/ensure");
-
-const obj = {};
-
-ensureObject(obj); // obj
-ensureString(null); // Thrown TypeError: null is not an object
+Object.defineProperty(Function.prototype, "partial", {
+  value: require("es5-ext/function/#/partial"),
+  configurable: true,
+  enumerable: false,
+  writable: true
+});
+Object.defineProperty(Array.prototype, "flatten", {
+  value: require("es5-ext/array/#/flatten"),
+  configurable: true,
+  enumerable: false,
+  writable: true
+});
+Object.defineProperty(String.prototype, "capitalize", {
+  value: require("es5-ext/string/#/capitalize"),
+  configurable: true,
+  enumerable: false,
+  writable: true
+});
 ```
 
----
+See [es5-extend](https://github.com/wookieb/es5-extend#es5-extend), a great utility that automatically will extend natives for you.
 
-### String
+**Important:** Remember to **not** extend natives in scope of generic reusable packages (e.g. ones you intend to publish to npm). Extending natives is fine **only** if you're the _owner_ of the global scope, so e.g. in final project you lead development of.
 
-_string_ primitive
-
-#### `string/coerce`
-
-Restricted string coercion. Returns string presentation for every value that follows below constraints
-
-- is implicitly coercible to string
-- is neither`null` nor `undefined`
-- its `toString` method is not `Object.prototype.toString`
-
-For all other values `null` is returned
+When you're in situation when native extensions are not good idea, then you should use methods indirectly:
 
 ```javascript
-const coerceToString = require("type/string/coerce");
+var flatten = require("es5-ext/array/#/flatten");
 
-coerceToString(12); // "12"
-coerceToString(undefined); // null
+flatten.call([1, [2, [3, 4]]]); // [1, 2, 3, 4]
 ```
 
-#### `string/ensure`
-
-If given argument is a string coercible value (via [`string/coerce`](#stringcoerce)) returns result string.
-Otherwise `TypeError` is thrown.
+for better convenience you can turn methods into functions:
 
 ```javascript
-const ensureString = require("type/string/ensure");
+var call = Function.prototype.call;
+var flatten = call.bind(require("es5-ext/array/#/flatten"));
 
-ensureString(12); // "12"
-ensureString(null); // Thrown TypeError: null is not a string
+flatten([1, [2, [3, 4]]]); // [1, 2, 3, 4]
 ```
 
----
-
-### Number
-
-_number_ primitive
-
-#### `number/coerce`
-
-Restricted number coercion. Returns number presentation for every value that follows below constraints
-
-- is implicitly coercible to number
-- is neither `null` nor `undefined`
-- is not `NaN` and doesn't coerce to `NaN`
-
-For all other values `null` is returned
+You can configure custom toolkit (like [underscorejs](http://underscorejs.org/)), and use it throughout your application
 
 ```javascript
-const coerceToNumber = require("type/number/coerce");
+var util = {};
+util.partial = call.bind(require("es5-ext/function/#/partial"));
+util.flatten = call.bind(require("es5-ext/array/#/flatten"));
+util.startsWith = call.bind(require("es5-ext/string/#/starts-with"));
 
-coerceToNumber("12"); // 12
-coerceToNumber({}); // null
-coerceToNumber(null); // null
+util.flatten([1, [2, [3, 4]]]); // [1, 2, 3, 4]
 ```
 
-#### `number/ensure`
+As with native ones most methods are generic and can be run on any type of object.
 
-If given argument is a number coercible value (via [`number/coerce`](#numbercoerce)) returns result number.
-Otherwise `TypeError` is thrown.
+## API
 
-```javascript
-const ensureNumber = require("type/number/ensure");
+### Global extensions
 
-ensureNumber(12); // "12"
-ensureNumber(null); // Thrown TypeError: null is not a number
-```
+#### global _(es5-ext/global)_
 
----
+Object that represents global scope
 
-#### Finite Number
+### Array Constructor extensions
 
-Finite _number_ primitive
+#### from(arrayLike[, mapFn[, thisArg]]) _(es5-ext/array/from)_
 
-##### `finite/coerce`
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.from).
+Returns array representation of _iterable_ or _arrayLike_. If _arrayLike_ is an instance of array, its copy is returned.
 
-Follows [`number/coerce`](#numbercoerce) additionally rejecting `Infinity` and `-Infinity` values (`null` is returned if given values coerces to them)
+#### generate([length[, …fill]]) _(es5-ext/array/generate)_
 
-```javascript
-const coerceToFinite = require("type/finite/coerce");
+Generate an array of pre-given _length_ built of repeated arguments.
 
-coerceToFinite("12"); // 12
-coerceToFinite(Infinity); // null
-coerceToFinite(null); // null
-```
+#### isPlainArray(x) _(es5-ext/array/is-plain-array)_
 
-##### `finite/ensure`
+Returns true if object is plain array (not instance of one of the Array's extensions).
 
-If given argument is a finite number coercible value (via [`finite/coerce`](#finitecoerce)) returns result number.
-Otherwise `TypeError` is thrown.
+#### of([…items]) _(es5-ext/array/of)_
 
-```javascript
-const ensureFinite = require("type/finite/ensure");
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.of).
+Create an array from given arguments.
 
-ensureFinite(12); // "12"
-ensureFinite(null); // Thrown TypeError: null is not a finite number
-```
+#### toArray(obj) _(es5-ext/array/to-array)_
 
----
+Returns array representation of `obj`. If `obj` is already an array, `obj` is returned back.
 
-#### Integer Number
+#### validArray(obj) _(es5-ext/array/valid-array)_
 
-Integer _number_ primitive
+Returns `obj` if it's an array, otherwise throws `TypeError`
 
-##### `integer/coerce`
+### Array Prototype extensions
 
-Follows [`finite/coerce`](#finitecoerce) additionally stripping decimal part from the number
+#### arr.binarySearch(compareFn) _(es5-ext/array/#/binary-search)_
 
-```javascript
-const coerceToInteger = require("type/integer/coerce");
+In **sorted** list search for index of item for which _compareFn_ returns value closest to _0_.
+It's variant of binary search algorithm
 
-coerceToInteger("12.95"); // 12
-coerceToInteger(Infinity); // null
-coerceToInteger(null); // null
-```
+#### arr.clear() _(es5-ext/array/#/clear)_
 
-##### `integer/ensure`
+Clears the array
 
-If given argument is an integer coercible value (via [`integer/coerce`](#integercoerce)) returns result number.
-Otherwise `TypeError` is thrown.
+#### arr.compact() _(es5-ext/array/#/compact)_
 
-```javascript
-const ensureInteger = require("type/integer/ensure");
+Returns a copy of the context with all non-values (`null` or `undefined`) removed.
 
-ensureInteger(12.93); // "12"
-ensureInteger(null); // Thrown TypeError: null is not an integer
-```
+#### arr.concat() _(es5-ext/array/#/concat)_
 
----
+[_Updated with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.prototype.concat).
+ES6's version of `concat`. Supports `isConcatSpreadable` symbol, and returns array of same type as the context.
 
-#### Safe Integer Number
+#### arr.contains(searchElement[, position]) _(es5-ext/array/#/contains)_
 
-Safe integer _number_ primitive
+Whether list contains the given value.
 
-##### `safe-integer/coerce`
+#### arr.copyWithin(target, start[, end]) _(es5-ext/array/#/copy-within)_
 
-Follows [`integer/coerce`](#integercoerce) but returns `null` in place of values which are beyond `Number.MIN_SAFE_INTEGER` and `Number.MAX_SAFE_INTEGER` range.
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.copywithin).
 
-```javascript
-const coerceToSafeInteger = require("type/safe-integer/coerce");
+#### arr.diff(other) _(es5-ext/array/#/diff)_
 
-coerceToInteger("12.95"); // 12
-coerceToInteger(9007199254740992); // null
-coerceToInteger(null); // null
-```
+Returns the array of elements that are present in context list but not present in other list.
 
-##### `safe-integer/ensure`
+#### arr.eIndexOf(searchElement[, fromIndex]) _(es5-ext/array/#/e-index-of)_
 
-If given argument is a safe integer coercible value (via [`safe-integer/coerce`](#safe-integercoerce)) returns result number.
-Otherwise `TypeError` is thrown.
+_egal_ version of `indexOf` method. [_SameValueZero_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero) logic is used for comparision
 
-```javascript
-const ensureSafeInteger = require("type/safe-integer/ensure");
+#### arr.eLastIndexOf(searchElement[, fromIndex]) _(es5-ext/array/#/e-last-index-of)_
 
-ensureSafeInteger(12.93); // "12"
-ensureSafeInteger(9007199254740992); // Thrown TypeError: null is not a safe integer
-```
+_egal_ version of `lastIndexOf` method. [_SameValueZero_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero) logic is used for comparision
 
----
+#### arr.entries() _(es5-ext/array/#/entries)_
 
-#### Natural Number
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.prototype.entries).
+Returns iterator object, which traverses the array. Each value is represented with an array, where first value is an index and second is corresponding to index value.
 
-Natural _number_ primitive
+#### arr.exclusion([…lists]]) _(es5-ext/array/#/exclusion)_
 
-##### `natural-number/coerce`
+Returns the array of elements that are found only in one of the lists (either context list or list provided in arguments).
 
-Follows [`integer/coerce`](#integercoerce) but returns `null` for values below `0`
+#### arr.fill(value[, start, end]) _(es5-ext/array/#/fill)_
 
-```javascript
-const coerceToNaturalNumber = require("type/natural-number/coerce");
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.fill).
 
-coerceToNaturalNumber("12.95"); // 12
-coerceToNaturalNumber(-120); // null
-coerceToNaturalNumber(null); // null
-```
+#### arr.filter(callback[, thisArg]) _(es5-ext/array/#/filter)_
 
-##### `natural-number/ensure`
+[_Updated with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.filter).
+ES6's version of `filter`, returns array of same type as the context.
 
-If given argument is a natural number coercible value (via [`natural-number/coerce`](#natural-numbercoerce)) returns result number.
-Otherwise `TypeError` is thrown.
+#### arr.find(predicate[, thisArg]) _(es5-ext/array/#/find)_
 
-```javascript
-const ensureNaturalNumber = require("type/natural-number/ensure");
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.find).
+Return first element for which given function returns true
 
-ensureNaturalNumber(12.93); // "12"
-ensureNaturalNumber(-230); // Thrown TypeError: null is not a natural number
-```
+#### arr.findIndex(predicate[, thisArg]) _(es5-ext/array/#/find-index)_
 
----
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.findindex).
+Return first index for which given function returns true
 
-### Plain Object
+#### arr.first() _(es5-ext/array/#/first)_
 
-A _plain object_
+Returns value for first defined index
 
-- Inherits directly from `Object.prototype` or `null`
-- Is not a constructor's `prototype` property
+#### arr.firstIndex() _(es5-ext/array/#/first-index)_
 
-#### `plain-object/is`
+Returns first declared index of the array
 
-Confirms if given object is a _plain object_
+#### arr.flatten() _(es5-ext/array/#/flatten)_
 
-```javascript
-const isPlainObject = require("type/plain-object/is");
+Returns flattened version of the array
 
-isPlainObject({}); // true
-isPlainObject(Object.create(null)); // true
-isPlainObject([]); // false
-```
+#### arr.forEachRight(cb[, thisArg]) _(es5-ext/array/#/for-each-right)_
 
-#### `plain-object/ensure`
+`forEach` starting from last element
 
-If given argument is a plain object it is returned back. Otherwise `TypeError` is thrown.
+#### arr.group(cb[, thisArg]) _(es5-ext/array/#/group)_
 
-```javascript
-const ensurePlainObject = require("type/plain-object/ensure");
+Group list elements by value returned by _cb_ function
 
-ensurePlainObject({}); // {}
-ensureArray("foo"); // Thrown TypeError: foo is not a plain object
-```
+#### arr.indexesOf(searchElement[, fromIndex]) _(es5-ext/array/#/indexes-of)_
 
----
+Returns array of all indexes of given value
 
-### Array
+#### arr.intersection([…lists]) _(es5-ext/array/#/intersection)_
 
-_Array_ instance
+Computes the array of values that are the intersection of all lists (context list and lists given in arguments)
 
-#### `array/is`
+#### arr.isCopy(other) _(es5-ext/array/#/is-copy)_
 
-Confirms if given object is a native array
+Returns true if both context and _other_ lists have same content
 
-```javascript
-const isArray = require("type/array/is");
+#### arr.isUniq() _(es5-ext/array/#/is-uniq)_
 
-isArray([]); // true
-isArray({}); // false
-isArray("foo"); // false
-```
+Returns true if all values in array are unique
 
-#### `array/ensure`
+#### arr.keys() _(es5-ext/array/#/keys)_
 
-If given argument is an array, it is returned back. Otherwise `TypeError` is thrown.
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.prototype.keys).
+Returns iterator object, which traverses all array indexes.
 
-```javascript
-const ensureArray = require("type/array/ensure");
+#### arr.last() _(es5-ext/array/#/last)_
 
-ensureArray(["foo"]); // ["foo"]
-ensureArray("foo"); // Thrown TypeError: foo is not an array
-```
+Returns value of last defined index
 
----
+#### arr.lastIndex() _(es5-ext/array/#/last)_
 
-#### Array Like
+Returns last defined index of the array
 
-_Array-like_ value (any value with `length` property)
+#### arr.map(callback[, thisArg]) _(es5-ext/array/#/map)_
 
-#### `array-like/is`
+[_Updated with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.map).
+ES6's version of `map`, returns array of same type as the context.
 
-Restricted _array-like_ confirmation. Returns true for every value that meets following contraints
+#### arr.remove(value[, …valuen]) _(es5-ext/array/#/remove)_
 
-- is an _object_ (or with `allowString` option, a _string_)
-- is not a _function_
-- Exposes `length` that meets [`array-length`](#array-lengthcoerce) constraints
+Remove values from the array
 
-```javascript
-const isArrayLike = require("type/array-like/is");
+#### arr.separate(sep) _(es5-ext/array/#/separate)_
 
-isArrayLike([]); // true
-isArrayLike({}); // false
-isArrayLike({ length: 0 }); // true
-isArrayLike("foo"); // false
-isArrayLike("foo", { allowString: true }); // true
-```
+Returns array with items separated with `sep` value
 
-#### `array-like/ensure`
+#### arr.slice(callback[, thisArg]) _(es5-ext/array/#/slice)_
 
-If given argument is an _array-like_, it is returned back. Otherwise `TypeError` is thrown.
+[_Updated with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.slice).
+ES6's version of `slice`, returns array of same type as the context.
 
-```javascript
-const ensureArrayLike = require("type/array-like/ensure");
+#### arr.someRight(cb[, thisArg]) _(es5-ext/array/#/someRight)_
 
-ensureArrayLike({ length: 0 }); // { length: 0 }
-ensureArrayLike("foo", { allowString: true }); // "foo"
-ensureArrayLike({}); // Thrown TypeError: null is not an iterable
-```
+`some` starting from last element
 
----
+#### arr.splice(callback[, thisArg]) _(es5-ext/array/#/splice)_
 
-#### Array length
+[_Updated with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.splice).
+ES6's version of `splice`, returns array of same type as the context.
 
-_number_ primitive that conforms as valid _array length_
+#### arr.uniq() _(es5-ext/array/#/uniq)_
 
-##### `array-length/coerce`
+Returns duplicate-free version of the array
 
-Follows [`safe-integer/coerce`](#safe-integercoerce) but returns `null` in place of values which are below `0`
+#### arr.values() _(es5-ext/array/#/values)_
 
-```javascript
-const coerceToArrayLength = require("type/safe-integer/coerce");
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.prototype.values).
+Returns iterator object which traverses all array values.
 
-coerceToArrayLength("12.95"); // 12
-coerceToArrayLength(9007199254740992); // null
-coerceToArrayLength(null); // null
-```
+#### arr[@@iterator] _(es5-ext/array/#/@@iterator)_
 
-##### `array-length/ensure`
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-array.prototype-@@iterator).
+Returns iterator object which traverses all array values.
 
-If given argument is an _array length_ coercible value (via [`array-length/coerce`](#array-lengthcoerce)) returns result number.
-Otherwise `TypeError` is thrown.
+### Boolean Constructor extensions
 
-```javascript
-const ensureArrayLength = require("type/array-length/ensure");
+#### isBoolean(x) _(es5-ext/boolean/is-boolean)_
 
-ensureArrayLength(12.93); // "12"
-ensureArrayLength(9007199254740992); // Thrown TypeError: null is not a valid array length
-```
+Whether value is boolean
 
----
+### Date Constructor extensions
 
-### Iterable
+#### isDate(x) _(es5-ext/date/is-date)_
 
-Value which implements _iterable_ protocol
+Whether value is date instance
 
-#### `iterable/is`
+#### validDate(x) _(es5-ext/date/valid-date)_
 
-Confirms if given object is an _iterable_ and is not a _string_ (unless `allowString` option is passed)
+If given object is not date throw TypeError in other case return it.
 
-```javascript
-const isIterable = require("type/iterable/is");
+### Date Prototype extensions
 
-isIterable([]); // true
-isIterable({}); // false
-isIterable("foo"); // false
-isIterable("foo", { allowString: true }); // true
-```
+#### date.copy(date) _(es5-ext/date/#/copy)_
 
-Supports also `denyEmpty` option
+Returns a copy of the date object
 
-```javascript
-isIterable([], { denyEmpty: true }); // false
-isIterable(["foo"], { denyEmpty: true }); // true
-```
+#### date.daysInMonth() _(es5-ext/date/#/days-in-month)_
 
-#### `iterable/ensure`
+Returns number of days of date's month
 
-If given argument is an _iterable_, it is returned back. Otherwise `TypeError` is thrown.
+#### date.floorDay() _(es5-ext/date/#/floor-day)_
 
-```javascript
-const ensureIterable = require("type/iterable/ensure");
+Sets the date time to 00:00:00.000
 
-ensureIterable([]); // []
-ensureIterable("foo", { allowString: true }); // "foo"
-ensureIterable({}); // Thrown TypeError: null is not expected iterable
-```
+#### date.floorMonth() _(es5-ext/date/#/floor-month)_
 
-Additionally items can be coreced with `coerceItem` option. Note that in this case:
+Sets date day to 1 and date time to 00:00:00.000
 
-- A newly created array with coerced values is returned
-- Validation crashes if any of the items is not coercible
+#### date.floorYear() _(es5-ext/date/#/floor-year)_
 
-```javascript
-ensureIterable(new Set(["foo", 12])); // ["foo", "12"]
+Sets date month to 0, day to 1 and date time to 00:00:00.000
 
-ensureIterable(new Set(["foo", {}])); // Thrown TypeError: Set({ "foo", {} }) is not expected iterable
-```
+#### date.format(pattern) _(es5-ext/date/#/format)_
 
----
+Formats date up to given string. Supported patterns:
 
-### Date
+- `%Y` - Year with century, 1999, 2003
+- `%y` - Year without century, 99, 03
+- `%m` - Month, 01..12
+- `%d` - Day of the month 01..31
+- `%H` - Hour (24-hour clock), 00..23
+- `%M` - Minute, 00..59
+- `%S` - Second, 00..59
+- `%L` - Milliseconds, 000..999
 
-_Date_ instance
+### Error Constructor extensions
 
-#### `date/is`
+#### custom(message/_, code, ext_/) _(es5-ext/error/custom)_
 
-Confirms if given object is a native date, and is not an _Invalid Date_
+Creates custom error object, optinally extended with `code` and other extension properties (provided with `ext` object)
 
-```javascript
-const isDate = require("type/date/is");
+#### isError(x) _(es5-ext/error/is-error)_
 
-isDate(new Date()); // true
-isDate(new Date("Invalid date")); // false
-isDate(Date.now()); // false
-isDate("foo"); // false
-```
+Whether value is an error (instance of `Error`).
 
-#### `date/ensure`
+#### validError(x) _(es5-ext/error/valid-error)_
 
-If given argument is a date object, it is returned back. Otherwise `TypeError` is thrown.
+If given object is not error throw TypeError in other case return it.
 
-```javascript
-const ensureDate = require("type/date/ensure");
+### Error Prototype extensions
 
-const date = new Date();
-ensureDate(date); // date
-ensureDate(123123); // Thrown TypeError: 123123 is not a date object
-```
+#### err.throw() _(es5-ext/error/#/throw)_
 
----
+Throws error
 
-### Time value
+### Function Constructor extensions
 
-_number_ primitive which is a valid _time value_ (as used internally in _Date_ instances)
+Some of the functions were inspired by [Functional JavaScript](http://osteele.com/sources/javascript/functional/) project by Olivier Steele
 
-#### `time-value/coerce`
+#### constant(x) _(es5-ext/function/constant)_
 
-Follows [`integer/coerce`](#integercoerce) but returns `null` in place of values which go beyond 100 000 0000 days from unix epoch
+Returns a constant function that returns pregiven argument
 
-```javascript
-const coerceToTimeValue = require("type/time-value/coerce");
+_k(x)(y) =def x_
 
-coerceToTimeValue(12312312); // true
-coerceToTimeValue(Number.MAX_SAFE_INTEGER); // false
-coerceToTimeValue("foo"); // false
-```
+#### identity(x) _(es5-ext/function/identity)_
 
-##### `time-value/ensure`
+Identity function. Returns first argument
 
-If given argument is a _time value_ coercible value (via [`time-value/coerce`](#time-valuecoerce)) returns result number.
-Otherwise `TypeError` is thrown.
+_i(x) =def x_
 
-```javascript
-const ensureTimeValue = require("type/time-value/ensure");
+#### invoke(name[, …args]) _(es5-ext/function/invoke)_
 
-ensureTimeValue(12.93); // "12"
-ensureTimeValue(Number.MAX_SAFE_INTEGER); // Thrown TypeError: null is not a natural number
-```
+Returns a function that takes an object as an argument, and applies object's
+_name_ method to arguments.
+_name_ can be name of the method or method itself.
 
----
+_invoke(name, …args)(object, …args2) =def object\[name\]\(…args, …args2\)_
 
-### Function
+#### isArguments(x) _(es5-ext/function/is-arguments)_
 
-_Function_ instance
+Whether value is arguments object
 
-#### `function/is`
+#### isFunction(arg) _(es5-ext/function/is-function)_
 
-Confirms if given object is a native function
+Whether value is instance of function
 
-```javascript
-const isFunction = require("type/function/is");
+#### noop() _(es5-ext/function/noop)_
 
-isFunction(function () {}); // true
-isFunction(() => {}); // true
-isFunction(class {}); // true
-isFunction("foo"); // false
-```
+No operation function
 
-#### `function/ensure`
+#### pluck(name) _(es5-ext/function/pluck)_
 
-If given argument is a function object, it is returned back. Otherwise `TypeError` is thrown.
+Returns a function that takes an object, and returns the value of its _name_
+property
 
-```javascript
-const ensureFunction = require("type/function/ensure");
+_pluck(name)(obj) =def obj[name]_
 
-const fn = function () {};
-ensureFunction(fn); // fn
-ensureFunction(/foo/); // Thrown TypeError: /foo/ is not a function
-```
+#### validFunction(arg) _(es5-ext/function/valid-function)_
 
----
+If given object is not function throw TypeError in other case return it.
 
-#### Plain Function
+### Function Prototype extensions
 
-A _Function_ instance that is not a _Class_
+Some of the methods were inspired by [Functional JavaScript](http://osteele.com/sources/javascript/functional/) project by Olivier Steele
 
-##### `plain-function/is`
+#### fn.compose([…fns]) _(es5-ext/function/#/compose)_
 
-Confirms if given object is a _plain function_
+Applies the functions in reverse argument-list order.
 
-```javascript
-const isPlainFunction = require("type/plain-function/is");
+_f1.compose(f2, f3, f4)(…args) =def f1(f2(f3(f4(…arg))))_
 
-isPlainFunction(function () {}); // true
-isPlainFunction(() => {}); // true
-isPlainFunction(class {}); // false
-isPlainFunction("foo"); // false
-```
+`compose` can also be used in plain function form as:
 
-##### `plain-function/ensure`
+_compose(f1, f2, f3, f4)(…args) =def f1(f2(f3(f4(…arg))))_
 
-If given argument is a _plain function_ object, it is returned back. Otherwise `TypeError` is thrown.
+#### fn.copy() _(es5-ext/function/#/copy)_
 
-```javascript
-const ensurePlainFunction = require("type/function/ensure");
+Produces copy of given function
 
-const fn = function () {};
-ensurePlainFunction(fn); // fn
-ensurePlainFunction(class {}); // Thrown TypeError: class is not a plain function
-```
+#### fn.curry([n]) _(es5-ext/function/#/curry)_
 
----
+Invoking the function returned by this function only _n_ arguments are passed to the underlying function. If the underlying function is not saturated, the result is a function that passes all its arguments to the underlying function.
+If _n_ is not provided then it defaults to context function length
 
-### RegExp
+_f.curry(4)(arg1, arg2)(arg3)(arg4) =def f(arg1, args2, arg3, arg4)_
 
-_RegExp_ instance
+#### fn.lock([…args]) _(es5-ext/function/#/lock)_
 
-#### `reg-exp/is`
+Returns a function that applies the underlying function to _args_, and ignores its own arguments.
 
-Confirms if given object is a native regular expression object
+_f.lock(…args)(…args2) =def f(…args)_
 
-```javascript
-const isRegExp = require("type/reg-exp/is");
+_Named after it's counterpart in Google Closure_
 
-isRegExp(/foo/);
-isRegExp({}); // false
-isRegExp("foo"); // false
-```
+#### fn.not() _(es5-ext/function/#/not)_
 
-#### `reg-exp/ensure`
+Returns a function that returns boolean negation of value returned by underlying function.
 
-If given argument is a regular expression object, it is returned back. Otherwise `TypeError` is thrown.
+_f.not()(…args) =def !f(…args)_
 
-```javascript
-const ensureRegExp = require("type/reg-exp/ensure");
+#### fn.partial([…args]) _(es5-ext/function/#/partial)_
 
-ensureRegExp(/foo/); // /foo/
-ensureRegExp("foo"); // Thrown TypeError: null is not a regular expression object
-```
+Returns a function that when called will behave like context function called with initially passed arguments. If more arguments are suplilied, they are appended to initial args.
 
----
+_f.partial(…args1)(…args2) =def f(…args1, …args2)_
 
-### Promise
+#### fn.spread() _(es5-ext/function/#/spread)_
 
-_Promise_ instance
+Returns a function that applies underlying function with first list argument
 
-#### `promise/is`
+_f.match()(args) =def f.apply(null, args)_
 
-Confirms if given object is a native _promise_
+#### fn.toStringTokens() _(es5-ext/function/#/to-string-tokens)_
 
-```javascript
-const isPromise = require("type/promise/is");
+Serializes function into two (arguments and body) string tokens. Result is plain object with `args` and `body` properties.
 
-isPromise(Promise.resolve()); // true
-isPromise({ then: () => {} }); // false
-isPromise({}); // false
-```
+### Math extensions
 
-##### `promise/ensure`
+#### acosh(x) _(es5-ext/math/acosh)_
 
-If given argument is a promise, it is returned back. Otherwise `TypeError` is thrown.
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.acosh).
 
-```javascript
-const ensurePromise = require("type/promise/ensure");
+#### asinh(x) _(es5-ext/math/asinh)_
 
-const promise = Promise.resolve();
-ensurePromise(promise); // promise
-eensurePromise({}); // Thrown TypeError: [object Object] is not a promise
-```
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.asinh).
 
----
+#### atanh(x) _(es5-ext/math/atanh)_
 
-#### Thenable
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.atanh).
 
-_Thenable_ object (an object with `then` method)
+#### cbrt(x) _(es5-ext/math/cbrt)_
 
-##### `thenable/is`
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.cbrt).
 
-Confirms if given object is a _thenable_
+#### clz32(x) _(es5-ext/math/clz32)_
 
-```javascript
-const isThenable = require("type/thenable/is");
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.clz32).
 
-isThenable(Promise.resolve()); // true
-isThenable({ then: () => {} }); // true
-isThenable({}); // false
-```
+#### cosh(x) _(es5-ext/math/cosh)_
 
-##### `thenable/ensure`
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.cosh).
 
-If given argument is a _thenable_ object, it is returned back. Otherwise `TypeError` is thrown.
+#### expm1(x) _(es5-ext/math/expm1)_
 
-```javascript
-const ensureThenable = require("type/thenable/ensure");
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.expm1).
 
-const promise = Promise.resolve();
-ensureThenable(promise); // promise
-ensureThenable({}); // Thrown TypeError: [object Object] is not a thenable object
-```
+#### fround(x) _(es5-ext/math/fround)_
 
----
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.fround).
 
-### Error
+#### hypot([…values]) _(es5-ext/math/hypot)_
 
-_Error_ instance
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.hypot).
 
-#### `error/is`
+#### imul(x, y) _(es5-ext/math/imul)_
 
-Confirms if given object is a native error object
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.imul).
 
-```javascript
-const isError = require("type/error/is");
+#### log1p(x) _(es5-ext/math/log1p)_
 
-isError(new Error()); // true
-isError({ message: "Fake error" }); // false
-```
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.log1p).
 
-#### `error/ensure`
+#### log2(x) _(es5-ext/math/log2)_
 
-If given argument is an error object, it is returned back. Otherwise `TypeError` is thrown.
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.log2).
 
-```javascript
-const ensureError = require("type/error/ensure");
+#### log10(x) _(es5-ext/math/log10)_
 
-const someError = new Error("Some error");
-ensureError(someError); // someError
-ensureError({ message: "Fake error" }); // Thrown TypeError: [object Object] is not an error object
-```
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.log10).
 
----
+#### sign(x) _(es5-ext/math/sign)_
 
-### Prototype
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.sign).
 
-Some constructor's `prototype` property
+#### sinh(x) _(es5-ext/math/sinh)_
 
-#### `prototype/is`
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.sinh).
 
-Confirms if given object serves as a _prototype_ property
+#### tanh(x) _(es5-ext/math/tanh)_
 
-```javascript
-const isPrototype = require("type/prototype/is");
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.tanh).
 
-isPrototype({}); // false
-isPrototype(Object.prototype); // true
-isPrototype(Array.prototype); // true
-```
+#### trunc(x) _(es5-ext/math/trunc)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-math.trunc).
+
+### Number Constructor extensions
+
+#### EPSILON _(es5-ext/number/epsilon)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.epsilon).
+
+The difference between 1 and the smallest value greater than 1 that is representable as a Number value, which is approximately 2.2204460492503130808472633361816 x 10-16.
+
+#### isFinite(x) _(es5-ext/number/is-finite)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.isfinite).
+Whether value is finite. Differs from global isNaN that it doesn't do type coercion.
+
+#### isInteger(x) _(es5-ext/number/is-integer)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.isinteger).
+Whether value is integer.
+
+#### isNaN(x) _(es5-ext/number/is-nan)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.isnan).
+Whether value is NaN. Differs from global isNaN that it doesn't do type coercion.
+
+#### isNumber(x) _(es5-ext/number/is-number)_
+
+Whether given value is number
+
+#### isSafeInteger(x) _(es5-ext/number/is-safe-integer)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.issafeinteger).
+
+#### MAX*SAFE_INTEGER *(es5-ext/number/max-safe-integer)\_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.maxsafeinteger).
+The value of Number.MAX_SAFE_INTEGER is 9007199254740991.
+
+#### MIN*SAFE_INTEGER *(es5-ext/number/min-safe-integer)\_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.minsafeinteger).
+The value of Number.MIN_SAFE_INTEGER is -9007199254740991 (253-1).
+
+#### toInteger(x) _(es5-ext/number/to-integer)_
+
+Converts value to integer
+
+#### toPosInteger(x) _(es5-ext/number/to-pos-integer)_
+
+Converts value to positive integer. If provided value is less than 0, then 0 is returned
+
+#### toUint32(x) _(es5-ext/number/to-uint32)_
+
+Converts value to unsigned 32 bit integer. This type is used for array lengths.
+See: http://www.2ality.com/2012/02/js-integers.html
+
+### Number Prototype extensions
+
+#### num.pad(length[, precision]) _(es5-ext/number/#/pad)_
+
+Pad given number with zeros. Returns string
+
+### Object Constructor extensions
+
+#### assign(target, source[, …sourcen]) _(es5-ext/object/assign)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.assign).
+Extend _target_ by enumerable own properties of other objects. If properties are already set on target object, they will be overwritten.
+
+#### clear(obj) _(es5-ext/object/clear)_
+
+Remove all enumerable own properties of the object
+
+#### compact(obj) _(es5-ext/object/compact)_
+
+Returns copy of the object with all enumerable properties that have no falsy values
+
+#### compare(obj1, obj2) _(es5-ext/object/compare)_
+
+Universal cross-type compare function. To be used for e.g. array sort.
+
+#### copy(obj) _(es5-ext/object/copy)_
+
+Returns copy of the object with all enumerable properties.
+
+#### copyDeep(obj) _(es5-ext/object/copy-deep)_
+
+Returns deep copy of the object with all enumerable properties.
+
+#### count(obj) _(es5-ext/object/count)_
+
+Counts number of enumerable own properties on object
+
+#### create(obj[, properties]) _(es5-ext/object/create)_
+
+`Object.create` alternative that provides workaround for [V8 issue](http://code.google.com/p/v8/issues/detail?id=2804).
+
+When `null` is provided as a prototype, it's substituted with specially prepared object that derives from Object.prototype but has all Object.prototype properties shadowed with undefined.
+
+It's quirky solution that allows us to have plain objects with no truthy properties but with turnable prototype.
+
+Use only for objects that you plan to switch prototypes of and be aware of limitations of this workaround.
+
+#### eq(x, y) _(es5-ext/object/eq)_
+
+Whether two values are equal, using [_SameValueZero_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero) algorithm.
+
+#### every(obj, cb[, thisArg[, compareFn]]) _(es5-ext/object/every)_
+
+Analogous to Array.prototype.every. Returns true if every key-value pair in this object satisfies the provided testing function.
+Optionally _compareFn_ can be provided which assures that keys are tested in given order. If provided _compareFn_ is equal to `true`, then order is alphabetical (by key).
+
+#### filter(obj, cb[, thisArg]) _(es5-ext/object/filter)_
+
+Analogous to Array.prototype.filter. Returns new object with properites for which _cb_ function returned truthy value.
+
+#### firstKey(obj) _(es5-ext/object/first-key)_
+
+Returns first enumerable key of the object, as keys are unordered by specification, it can be any key of an object.
+
+#### flatten(obj) _(es5-ext/object/flatten)_
+
+Returns new object, with flatten properties of input object
+
+_flatten({ a: { b: 1 }, c: { d: 1 } }) =def { b: 1, d: 1 }_
+
+#### forEach(obj, cb[, thisArg[, compareFn]]) _(es5-ext/object/for-each)_
+
+Analogous to Array.prototype.forEach. Calls a function for each key-value pair found in object
+Optionally _compareFn_ can be provided which assures that properties are iterated in given order. If provided _compareFn_ is equal to `true`, then order is alphabetical (by key).
+
+#### getPropertyNames() _(es5-ext/object/get-property-names)_
+
+Get all (not just own) property names of the object
+
+#### is(x, y) _(es5-ext/object/is)_
+
+Whether two values are equal, using [_SameValue_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero) algorithm.
+
+#### isArrayLike(x) _(es5-ext/object/is-array-like)_
+
+Whether object is array-like object
+
+#### isCopy(x, y) _(es5-ext/object/is-copy)_
+
+Two values are considered a copy of same value when all of their own enumerable properties have same values.
+
+#### isCopyDeep(x, y) _(es5-ext/object/is-copy-deep)_
+
+Deep comparision of objects
+
+#### isEmpty(obj) _(es5-ext/object/is-empty)_
+
+True if object doesn't have any own enumerable property
+
+#### isObject(arg) _(es5-ext/object/is-object)_
+
+Whether value is not primitive
+
+#### isPlainObject(arg) _(es5-ext/object/is-plain-object)_
+
+Whether object is plain object, its protototype should be Object.prototype and it cannot be host object.
+
+#### keyOf(obj, searchValue) _(es5-ext/object/key-of)_
+
+Search object for value
+
+#### keys(obj) _(es5-ext/object/keys)_
+
+[_Updated with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys).
+ES6's version of `keys`, doesn't throw on primitive input
+
+#### map(obj, cb[, thisArg]) _(es5-ext/object/map)_
+
+Analogous to Array.prototype.map. Creates a new object with properties which values are results of calling a provided function on every key-value pair in this object.
+
+#### mapKeys(obj, cb[, thisArg]) _(es5-ext/object/map-keys)_
+
+Create new object with same values, but remapped keys
+
+#### mixin(target, source) _(es5-ext/object/mixin)_
+
+Extend _target_ by all own properties of other objects. Properties found in both objects will be overwritten (unless they're not configurable and cannot be overwritten).
+_It was for a moment part of ECMAScript 6 draft._
+
+#### mixinPrototypes(target, …source]) _(es5-ext/object/mixin-prototypes)_
+
+Extends _target_, with all source and source's prototype properties.
+Useful as an alternative for `setPrototypeOf` in environments in which it cannot be shimmed (no `__proto__` support).
+
+#### normalizeOptions(options) _(es5-ext/object/normalize-options)_
+
+Normalizes options object into flat plain object.
+
+Useful for functions in which we either need to keep options object for future reference or need to modify it for internal use.
+
+- It never returns input `options` object back (always a copy is created)
+- `options` can be undefined in such case empty plain object is returned.
+- Copies all enumerable properties found down prototype chain.
+
+#### primitiveSet([…names]) _(es5-ext/object/primitive-set)_
+
+Creates `null` prototype based plain object, and sets on it all property names provided in arguments to true.
+
+#### safeTraverse(obj[, …names]) _(es5-ext/object/safe-traverse)_
+
+Safe navigation of object properties. See http://wiki.ecmascript.org/doku.php?id=strawman:existential_operator
+
+#### serialize(value) _(es5-ext/object/serialize)_
+
+Serialize value into string. Differs from [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) that it serializes also dates, functions and regular expresssions.
+
+#### setPrototypeOf(object, proto) _(es5-ext/object/set-prototype-of)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.setprototypeof).
+If native version is not provided, it depends on existence of `__proto__` functionality, if it's missing, `null` instead of function is exposed.
+
+#### some(obj, cb[, thisArg[, compareFn]]) _(es5-ext/object/some)_
+
+Analogous to Array.prototype.some Returns true if any key-value pair satisfies the provided
+testing function.
+Optionally _compareFn_ can be provided which assures that keys are tested in given order. If provided _compareFn_ is equal to `true`, then order is alphabetical (by key).
+
+#### toArray(obj[, cb[, thisArg[, compareFn]]]) _(es5-ext/object/to-array)_
+
+Creates an array of results of calling a provided function on every key-value pair in this object.
+Optionally _compareFn_ can be provided which assures that results are added in given order. If provided _compareFn_ is equal to `true`, then order is alphabetical (by key).
+
+#### unserialize(str) _(es5-ext/object/unserialize)_
+
+Userializes value previously serialized with [serialize](#serializevalue-es5-extobjectserialize)
+
+#### validCallable(x) _(es5-ext/object/valid-callable)_
+
+If given object is not callable throw TypeError in other case return it.
+
+#### validObject(x) _(es5-ext/object/valid-object)_
+
+Throws error if given value is not an object, otherwise it is returned.
+
+#### validValue(x) _(es5-ext/object/valid-value)_
+
+Throws error if given value is `null` or `undefined`, otherwise returns value.
+
+### Promise Prototype extensions
+
+#### promise.finally(onFinally) _(es5-ext/promise/#/finally)_
+
+[_Introduced with ECMAScript 2018_](https://tc39.github.io/ecma262/#sec-promise.prototype.finally).
+
+### RegExp Constructor extensions
+
+#### escape(str) _(es5-ext/reg-exp/escape)_
+
+Escapes string to be used in regular expression
+
+#### isRegExp(x) _(es5-ext/reg-exp/is-reg-exp)_
+
+Whether object is regular expression
+
+#### validRegExp(x) _(es5-ext/reg-exp/valid-reg-exp)_
+
+If object is regular expression it is returned, otherwise TypeError is thrown.
+
+### RegExp Prototype extensions
+
+#### re.isSticky(x) _(es5-ext/reg-exp/#/is-sticky)_
+
+Whether regular expression has `sticky` flag.
+
+It's to be used as counterpart to [regExp.sticky](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-get-regexp.prototype.sticky) if it's not implemented.
+
+#### re.isUnicode(x) _(es5-ext/reg-exp/#/is-unicode)_
+
+Whether regular expression has `unicode` flag.
+
+It's to be used as counterpart to [regExp.unicode](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-get-regexp.prototype.unicode) if it's not implemented.
+
+#### re.match(string) _(es5-ext/reg-exp/#/match)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-regexp.prototype.match).
+
+#### re.replace(string, replaceValue) _(es5-ext/reg-exp/#/replace)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-regexp.prototype.replace).
+
+#### re.search(string) _(es5-ext/reg-exp/#/search)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-regexp.prototype.search).
+
+#### re.split(string) _(es5-ext/reg-exp/#/search)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-regexp.prototype.split).
+
+#### re.sticky _(es5-ext/reg-exp/#/sticky/implement)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-regexp.prototype.sticky).
+It's a getter, so only `implement` and `is-implemented` modules are provided.
+
+#### re.unicode _(es5-ext/reg-exp/#/unicode/implement)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-regexp.prototype.unicode).
+It's a getter, so only `implement` and `is-implemented` modules are provided.
+
+### String Constructor extensions
+
+#### formatMethod(fMap) _(es5-ext/string/format-method)_
+
+Creates format method. It's used e.g. to create `Date.prototype.format` method
+
+#### fromCodePoint([…codePoints]) _(es5-ext/string/from-code-point)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.fromcodepoint)
+
+#### isString(x) _(es5-ext/string/is-string)_
+
+Whether object is string
+
+#### randomUniq() _(es5-ext/string/random-uniq)_
+
+Returns randomly generated id, with guarantee of local uniqueness (no same id will be returned twice)
+
+#### raw(callSite[, …substitutions]) _(es5-ext/string/raw)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.raw)
+
+### String Prototype extensions
+
+#### str.at(pos) _(es5-ext/string/#/at)_
+
+_Proposed for ECMAScript 6/7 standard, but not (yet) in a draft_
+
+Returns a string at given position in Unicode-safe manner.
+Based on [implementation by Mathias Bynens](https://github.com/mathiasbynens/String.prototype.at).
+
+#### str.camelToHyphen() _(es5-ext/string/#/camel-to-hyphen)_
+
+Convert camelCase string to hyphen separated, e.g. one-two-three -> oneTwoThree.
+Useful when converting names from js property convention into filename convention.
+
+#### str.capitalize() _(es5-ext/string/#/capitalize)_
+
+Capitalize first character of a string
+
+#### str.caseInsensitiveCompare(str) _(es5-ext/string/#/case-insensitive-compare)_
+
+Case insensitive compare
+
+#### str.codePointAt(pos) _(es5-ext/string/#/code-point-at)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.prototype.codepointat)
+
+Based on [implementation by Mathias Bynens](https://github.com/mathiasbynens/String.prototype.codePointAt).
+
+#### str.contains(searchString[, position]) _(es5-ext/string/#/contains)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.prototype.contains)
+
+Whether string contains given string.
+
+#### str.endsWith(searchString[, endPosition]) _(es5-ext/string/#/ends-with)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.prototype.endswith).
+Whether strings ends with given string
+
+#### str.hyphenToCamel() _(es5-ext/string/#/hyphen-to-camel)_
+
+Convert hyphen separated string to camelCase, e.g. one-two-three -> oneTwoThree.
+Useful when converting names from filename convention to js property name convention.
+
+#### str.indent(str[, count]) _(es5-ext/string/#/indent)_
+
+Indents each line with provided _str_ (if _count_ given then _str_ is repeated _count_ times).
+
+#### str.last() _(es5-ext/string/#/last)_
+
+Return last character
+
+#### str.normalize([form]) _(es5-ext/string/#/normalize)_
+
+[_Introduced with ECMAScript 6_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize).
+Returns the Unicode Normalization Form of a given string.
+Based on Matsuza's version. Code used for integrated shim can be found at [github.com/walling/unorm](https://github.com/walling/unorm/blob/master/lib/unorm.js)
+
+#### str.pad(fill[, length]) _(es5-ext/string/#/pad)_
+
+Pad string with _fill_.
+If _length_ si given than _fill_ is reapated _length_ times.
+If _length_ is negative then pad is applied from right.
+
+#### str.repeat(n) _(es5-ext/string/#/repeat)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.prototype.repeat).
+Repeat given string _n_ times
+
+#### str.plainReplace(search, replace) _(es5-ext/string/#/plain-replace)_
+
+Simple `replace` version. Doesn't support regular expressions. Replaces just first occurrence of search string. Doesn't support insert patterns, therefore it is safe to replace text with text obtained programmatically (there's no need for additional _\$_ characters escape in such case).
+
+#### str.plainReplaceAll(search, replace) _(es5-ext/string/#/plain-replace-all)_
+
+Simple `replace` version. Doesn't support regular expressions. Replaces all occurrences of search string. Doesn't support insert patterns, therefore it is safe to replace text with text obtained programmatically (there's no need for additional _\$_ characters escape in such case).
+
+#### str.startsWith(searchString[, position]) _(es5-ext/string/#/starts-with)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.prototype.startswith).
+Whether strings starts with given string
+
+#### str[@@iterator] _(es5-ext/string/#/@@iterator)_
+
+[_Introduced with ECMAScript 6_](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-string.prototype-@@iterator).
+Returns iterator object which traverses all string characters (with respect to unicode symbols)
 
 ### Tests
 
     $ npm test
 
-[nix-build-image]: https://semaphoreci.com/api/v1/medikoo-org/type/branches/master/shields_badge.svg
-[nix-build-url]: https://semaphoreci.com/medikoo-org/type
-[win-build-image]: https://ci.appveyor.com/api/projects/status/8nrtluuwsb5k9l8d?svg=true
-[win-build-url]: https://ci.appveyor.com/api/project/medikoo/type
-[cov-image]: https://img.shields.io/codecov/c/github/medikoo/type.svg
-[cov-url]: https://codecov.io/gh/medikoo/type
-[npm-image]: https://img.shields.io/npm/v/type.svg
-[npm-url]: https://www.npmjs.com/package/type
+## Security contact information
+
+To report a security vulnerability, please use the [Tidelift security contact](https://tidelift.com/security). Tidelift will coordinate the fix and disclosure.
+
+## es5-ext for enterprise
+
+Available as part of the Tidelift Subscription
+
+The maintainers of es5-ext and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-es5-ext?utm_source=npm-es5-ext&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+
+[build-image]: https://github.com/medikoo/es5-ext/workflows/Integrate/badge.svg
+[build-url]: https://github.com/medikoo/es5-ext/actions?query=workflow%3AIntegrate
+[cov-image]: https://img.shields.io/codecov/c/github/medikoo/es5-ext.svg
+[cov-url]: https://codecov.io/gh/medikoo/es5-ext
+[npm-image]: https://img.shields.io/npm/v/es5-ext.svg
+[npm-url]: https://www.npmjs.com/package/es5-ext

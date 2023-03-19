@@ -1,37 +1,25 @@
 "use strict";
 
-var isObject            = require("type/object/is")
-  , ensureNaturalNumber = require("type/natural-number/ensure")
-  , ensureString        = require("type/string/ensure");
+var isValue         = require("../object/is-value")
+  , toNaturalNumber = require("../number/to-pos-integer");
 
 var generated = Object.create(null), random = Math.random, uniqTryLimit = 100;
 
 var getChunk = function () { return random().toString(36).slice(2); };
 
-var getString = function (length, charset) {
-	var str;
-	if (charset) {
-		var charsetLength = charset.length;
-		str = "";
-		for (var i = 0; i < length; ++i) {
-			str += charset.charAt(Math.floor(Math.random() * charsetLength));
-		}
-		return str;
-	}
-	str = getChunk();
-	if (length === null) return str;
+var getString = function (/* length */) {
+	var str = getChunk(), length = arguments[0];
+	if (!isValue(length)) return str;
 	while (str.length < length) str += getChunk();
 	return str.slice(0, length);
 };
 
 module.exports = function (/* options */) {
-	var options = arguments[0];
-	if (!isObject(options)) options = {};
-	var length = ensureNaturalNumber(options.length, { "default": 10 })
-	  , isUnique = options.isUnique
-	  , charset = ensureString(options.charset, { isOptional: true });
+	var options = Object(arguments[0]), length = options.length, isUnique = options.isUnique;
 
-	var str = getString(length, charset);
+	if (isValue(length)) length = toNaturalNumber(length);
+
+	var str = getString(length);
 	if (isUnique) {
 		var count = 0;
 		while (generated[str]) {
