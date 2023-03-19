@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require("../lib/private/decimal-adjust")("floor");
+module.exports = require("./_decimal-adjust")("floor");
